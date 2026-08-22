@@ -1,0 +1,9 @@
+{
+    "private":  true,
+    "workspaces":  [
+                       "frontend",
+                       "backend",
+                       "ai-scraper"
+                   ],
+    "name":  "anawiser-workspace"
+}

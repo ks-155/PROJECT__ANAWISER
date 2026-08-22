@@ -1,0 +1,61 @@
+@import "tailwindcss";
+
+:root {
+  --paper: #e8eef2;
+  --paper-deep: #d9e3ea;
+  --ink: #14202b;
+  --teal: #0f766e;
+  --background: var(--paper);
+  --foreground: var(--ink);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-paper: var(--paper);
+  --color-paper-deep: var(--paper-deep);
+  --color-ink: var(--ink);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background:
+    radial-gradient(circle at 12% 8%, rgba(15, 118, 110, 0.08), transparent 42%),
+    radial-gradient(circle at 88% 0%, rgba(20, 32, 43, 0.06), transparent 36%),
+    var(--paper);
+  color: var(--ink);
+  font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
+}
+
+.font-display {
+  font-family: var(--font-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+.aegis-grid {
+  background-image:
+    linear-gradient(to right, rgba(20, 32, 43, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(20, 32, 43, 0.045) 1px, transparent 1px);
+  background-size: 28px 28px;
+  mask-image: linear-gradient(to bottom, black, transparent 90%);
+}
+
+code {
+  font-family: var(--font-mono), ui-monospace, monospace;
+}
+
+@keyframes aegis-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-in {
+  animation: aegis-fade-up 0.45s ease-out both;
+}
