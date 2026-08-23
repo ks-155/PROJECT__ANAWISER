@@ -1,0 +1,24 @@
+
+<annotation>
+    <folder>images</folder>
+    <filename>phones97.png</filename>
+    <size>
+        <width>320</width>
+        <height>400</height>
+        <depth>3</depth>
+    </size>
+    <segmented>0</segmented>
+    <object>
+        <name>phone</name>
+        <pose>Unspecified</pose>
+        <truncated>0</truncated>
+        <occluded>0</occluded>
+        <difficult>0</difficult>
+        <bndbox>
+            <xmin>70</xmin>
+            <ymin>164</ymin>
+            <xmax>150</xmax>
+            <ymax>323</ymax>
+        </bndbox>
+    </object>
+</annotation>

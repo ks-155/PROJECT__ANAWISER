@@ -49,3 +49,9 @@ next-env.d.ts
 # legacy local data
 **/data/*.json
 
+# Local D:\ backup only. public/datasets is tracked and deploys to Vercel’s CDN.
+frontend/data/datasets-backup/
+frontend/data/datasets-backup/
+!frontend/public/datasets/
+!frontend/public/datasets/**
+
