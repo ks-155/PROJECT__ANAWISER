@@ -1,4 +1,5 @@
 # Anawiser
+### *Analyser & Wiser*
 
 <img width="1894" height="1199" alt="Screenshot 2026-08-23 232528" src="https://github.com/user-attachments/assets/91f460c4-e24e-4e6f-9a5b-23db71702ed9" />
 <img width="1083" height="975" alt="Screenshot 2026-08-23 232711" src="https://github.com/user-attachments/assets/6449d0a6-9a51-40da-8963-2e19de7ad33e" />
@@ -6,8 +7,7 @@
 <img width="1890" height="966" alt="Screenshot 2026-08-23 232734 (1)" src="https://github.com/user-attachments/assets/0f668246-d11d-4160-91e1-a967ef128381" />
 
 
-# Anawiser
-### *Analyser & Wiser*
+
 
 A price-intelligence tool that helps local retailers stay competitive against e-commerce platforms — and helps online shoppers find the best deals.
 
