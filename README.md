@@ -1,6 +1,10 @@
 # Anawiser
 
 <img width="1894" height="1199" alt="Screenshot 2026-08-23 232528" src="https://github.com/user-attachments/assets/91f460c4-e24e-4e6f-9a5b-23db71702ed9" />
+<img width="1083" height="975" alt="Screenshot 2026-08-23 232711" src="https://github.com/user-attachments/assets/6449d0a6-9a51-40da-8963-2e19de7ad33e" />
+<img width="1871" height="998" alt="Screenshot 2026-08-23 232955 (1)" src="https://github.com/user-attachments/assets/801c398f-1256-492b-8357-2149cd6faaef" />
+<img width="1890" height="966" alt="Screenshot 2026-08-23 232734 (1)" src="https://github.com/user-attachments/assets/0f668246-d11d-4160-91e1-a967ef128381" />
+
 
 
 Private Indian e-commerce price comparison. Next.js on Vercel, **public** prices via Bright Data, local shops in Supabase, optional Gemini chat.
