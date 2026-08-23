@@ -11,6 +11,14 @@
     "collectors:run": "node scripts/run-collectors.mjs"
   },
   "dependencies": {
+    "@anawiser/ai-scraper": "*",
+    "@anawiser/backend": "*",
+    "@react-three/drei": "^10.7.8",
+    "@react-three/fiber": "^9.7.0",
+    "@splinetool/react-spline": "4.1.0",
+    "@splinetool/runtime": "1.12.98",
+    "three": "^0.185.1",
+    "cheerio": "^1.2.0",
     "clsx": "^2.1.1",
     "date-fns": "^4.4.0",
     "lucide-react": "^1.31.0",
@@ -18,9 +26,7 @@
     "react": "19.2.8",
     "react-dom": "19.2.8",
     "tailwind-merge": "^3.6.0",
-    "zod": "^4.4.3",
-    "@anawiser/backend": "*",
-    "@anawiser/ai-scraper": "*"
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",

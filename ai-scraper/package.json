@@ -3,5 +3,9 @@
     "name": "@anawiser/ai-scraper",
     "version": "1.0.0",
     "type": "module",
+    "exports": {
+      ".": "./src/engine.ts",
+      "./assistant": "./src/assistant.ts"
+    },
     "dependencies": {}
 }

@@ -1,10 +1,14 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #e8eef2;
-  --paper-deep: #d9e3ea;
-  --ink: #14202b;
-  --teal: #0f766e;
+  --paper: #e8f0fa;
+  --paper-deep: #d4e0f5;
+  --sky: #8eb8e8;
+  --ink: #1a1b3a;
+  --teal: #0d9488;
+  --cyan: #06b6d4;
+  --violet: #7c3aed;
+  --indigo: #4f46e5;
   --background: var(--paper);
   --foreground: var(--ink);
 }
@@ -14,17 +18,19 @@
   --color-foreground: var(--foreground);
   --color-paper: var(--paper);
   --color-paper-deep: var(--paper-deep);
+  --color-sky: var(--sky);
   --color-ink: var(--ink);
+  --color-teal: var(--teal);
+  --color-cyan: var(--cyan);
+  --color-violet: var(--violet);
+  --color-indigo: var(--indigo);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
   --font-mono: var(--font-mono);
 }
 
 body {
-  background:
-    radial-gradient(circle at 12% 8%, rgba(15, 118, 110, 0.08), transparent 42%),
-    radial-gradient(circle at 88% 0%, rgba(20, 32, 43, 0.06), transparent 36%),
-    var(--paper);
+  background: transparent;
   color: var(--ink);
   font-family: var(--font-body), ui-sans-serif, system-ui, sans-serif;
 }
@@ -35,8 +41,8 @@ body {
 
 .aegis-grid {
   background-image:
-    linear-gradient(to right, rgba(20, 32, 43, 0.045) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(20, 32, 43, 0.045) 1px, transparent 1px);
+    linear-gradient(to right, rgba(26, 27, 58, 0.045) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(26, 27, 58, 0.045) 1px, transparent 1px);
   background-size: 28px 28px;
   mask-image: linear-gradient(to bottom, black, transparent 90%);
 }
@@ -58,4 +64,30 @@ code {
 
 .animate-in {
   animation: aegis-fade-up 0.45s ease-out both;
+}
+
+.panel-frost {
+  border: 1px solid rgba(255, 255, 255, 0.75);
+  background:
+    linear-gradient(155deg, rgba(255, 255, 255, 0.94), rgba(248, 250, 252, 0.9) 50%, rgba(241, 245, 249, 0.92)),
+    rgba(255, 255, 255, 0.88);
+  box-shadow:
+    0 14px 44px rgba(15, 23, 42, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(22px) saturate(1.15);
+}
+
+.text-super {
+  color: var(--ink);
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  line-height: 1.55;
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.35);
+}
+
+.heading-strong {
+  color: var(--ink);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
 }
