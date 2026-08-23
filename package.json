@@ -13,5 +13,8 @@
   },
   "overrides": {
     "@splinetool/runtime": "1.12.98"
+  },
+  "engines": {
+    "node": "20.x"
   }
 }

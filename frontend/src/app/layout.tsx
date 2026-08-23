@@ -24,7 +24,11 @@ export const metadata: Metadata = {
     "Track prices and stock on Amazon.in and Flipkart. Get instant alerts when prices drop below your target. Powered by Bright Data Scraper Studio.",
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   return (
     <html
       lang="en"
