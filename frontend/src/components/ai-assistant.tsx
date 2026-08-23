@@ -1,55 +1,35 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import {
-  Bot,
-  ChevronDown,
-  Eraser,
-  KeyRound,
-  LoaderCircle,
-  Minus,
-  Send,
-  X,
-} from "lucide-react";
+import { Bot, ChevronDown, Eraser, LoaderCircle, Minus, Send, X } from "lucide-react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { useAnawiserChat } from "./chat-context";
 
 type Msg = { role: "user" | "assistant"; content: string };
-
-type Props = {
-  productName?: string;
-  category?: string;
-  prices?: Record<string, { price: number | null; status: string }>;
-  localPrices?: Array<{ store?: string; price?: number | null }>;
-};
 
 const WELCOME: Msg = {
   role: "assistant",
   content:
-    "Hi — I’m Anawiser AI. Ask how to use the tracker, compare scraped prices, or what to do if a scrape looks broken.",
+    "Hi — I’m AnawiserAI. Ask what this site can do, how to compare prices, or which live store is cheapest. I only answer questions about Anawiser.",
 };
 
 const SUGGESTIONS = [
+  "What can your site do?",
   "How do I use Anawiser?",
   "Which store is cheapest?",
-  "Should I buy now?",
 ];
 
-export function AiAssistantPanel({ productName, category, prices, localPrices }: Props) {
+export function AiAssistantPanel() {
+  const { context } = useAnawiserChat();
+  const path = usePathname();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([WELCOME]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
-  const [configured, setConfigured] = useState<boolean | null>(null);
   const [error, setError] = useState<string | null>(null);
   const bottomRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    fetch("/api/anawiser/ai")
-      .then((r) => r.json())
-      .then((d) => setConfigured(Boolean(d.configured)))
-      .catch(() => setConfigured(false));
-  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -69,13 +49,6 @@ export function AiAssistantPanel({ productName, category, prices, localPrices }:
     return () => window.removeEventListener("keydown", onKey);
   }, [open]);
 
-  const clearChat = () => {
-    setMessages([WELCOME]);
-    setError(null);
-  };
-
-  const closePanel = () => setOpen(false);
-
   const send = async (text: string) => {
     const message = text.trim();
     if (!message || busy) return;
@@ -93,23 +66,12 @@ export function AiAssistantPanel({ productName, category, prices, localPrices }:
         body: JSON.stringify({
           message,
           history: nextHistory.slice(0, -1),
-          context: {
-            productName,
-            category,
-            prices,
-            localPrices: localPrices?.map((lp) => ({
-              store: lp.store,
-              price: lp.price ?? null,
-            })),
-          },
+          context: { ...context, path: context.path || path },
         }),
       });
       const data = await res.json();
-      if (!res.ok || !data.ok) {
-        throw new Error(data.error || "AI request failed");
-      }
-      setMessages((prev) => [...prev, { role: "assistant", content: data.reply }]);
-      setConfigured(true);
+      if (!res.ok) throw new Error(data.error || "AI request failed");
+      setMessages((prev) => [...prev, { role: "assistant", content: data.reply || "I had no reply." }]);
     } catch (err) {
       const msg = err instanceof Error ? err.message : "AI request failed";
       setError(msg);
@@ -118,7 +80,7 @@ export function AiAssistantPanel({ productName, category, prices, localPrices }:
         {
           role: "assistant",
           content:
-            "I couldn’t reach Gemini. Add GEMINI_API_KEY to frontend/.env.local, restart the dev server, then try again.",
+            "I could not answer just now. Try “What can your site do?” or open Compare.",
         },
       ]);
     } finally {
@@ -130,72 +92,57 @@ export function AiAssistantPanel({ productName, category, prices, localPrices }:
     <div className="pointer-events-none fixed bottom-5 right-5 z-[100] flex flex-col items-end gap-3">
       {open ? (
         <div
-          ref={panelRef}
           role="dialog"
-          aria-label="Anawiser AI assistant"
-          className="animate-in pointer-events-auto flex h-[min(560px,72vh)] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white/95 shadow-[0_20px_50px_rgba(15,23,42,0.22)] backdrop-blur-2xl"
+          aria-label="AnawiserAI assistant"
+          className="pointer-events-auto flex h-[min(560px,72vh)] w-[min(380px,calc(100vw-2rem))] flex-col overflow-hidden rounded-2xl border border-white/20 bg-[#0c0c0c]/95 text-white shadow-2xl backdrop-blur-xl"
         >
-          <header className="flex items-start justify-between gap-2 border-b border-violet-700/40 bg-gradient-to-r from-violet-700 to-indigo-700 px-4 py-3">
+          <header className="flex items-start justify-between gap-2 border-b border-white/10 bg-white/5 px-4 py-3">
             <div className="min-w-0 pt-0.5">
-              <h2 className="truncate text-[16px] font-bold tracking-tight text-white">
-                Anawiser
-              </h2>
-              <p className="mt-0.5 text-[12px] font-medium text-violet-50">Anawiser&apos;s AI assistant</p>
+              <h2 className="truncate text-[16px] font-semibold tracking-tight">AnawiserAI</h2>
+              <p className="mt-0.5 text-[12px] text-white/60">Ask about this site</p>
             </div>
             <div className="flex shrink-0 items-center gap-0.5">
               <button
                 type="button"
-                onClick={clearChat}
-                className="rounded-md px-2 py-1.5 text-[12px] text-violet-100 transition hover:bg-white/15 hover:text-white"
+                onClick={() => {
+                  setMessages([WELCOME]);
+                  setError(null);
+                }}
+                className="rounded-md px-2 py-1.5 text-[12px] text-white/70 hover:bg-white/10 hover:text-white"
                 title="Clear chat"
               >
                 <span className="inline-flex items-center gap-1.5">
                   <Eraser className="h-3.5 w-3.5" />
-                  Clear chat
+                  Clear
                 </span>
               </button>
               <button
                 type="button"
-                onClick={closePanel}
-                className="rounded-md p-1.5 text-violet-200 transition hover:bg-white/15 hover:text-white"
+                onClick={() => setOpen(false)}
+                className="rounded-md p-1.5 text-white/70 hover:bg-white/10"
                 aria-label="Minimize"
-                title="Minimize"
               >
                 <Minus className="h-4 w-4" />
               </button>
               <button
                 type="button"
-                onClick={closePanel}
-                className="rounded-md p-1.5 text-violet-200 transition hover:bg-white/15 hover:text-white"
+                onClick={() => setOpen(false)}
+                className="rounded-md p-1.5 text-white/70 hover:bg-white/10"
                 aria-label="Close"
-                title="Close"
               >
                 <X className="h-4 w-4" />
               </button>
             </div>
           </header>
 
-          {configured === false ? (
-            <div className="mx-3 mt-3 flex items-start gap-2 rounded-xl border border-amber-400/40 bg-amber-50 px-3 py-2.5 text-xs text-amber-900">
-              <KeyRound className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-              <p>
-                Add <code className="text-[10px]">GEMINI_API_KEY</code> in{" "}
-                <code className="text-[10px]">frontend/.env.local</code> then restart.
-              </p>
-            </div>
-          ) : null}
-
           <div className="flex-1 space-y-3 overflow-y-auto px-3 py-3">
             {messages.map((m, i) => (
-              <div
-                key={`${m.role}-${i}`}
-                className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}
-              >
+              <div key={`${m.role}-${i}`} className={`flex ${m.role === "user" ? "justify-end" : "justify-start"}`}>
                 <div
-                  className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-[14px] font-medium leading-relaxed ${
+                  className={`max-w-[88%] rounded-2xl px-3.5 py-2.5 text-[14px] leading-relaxed ${
                     m.role === "user"
-                      ? "rounded-br-md bg-gradient-to-br from-violet-700 to-indigo-700 text-white"
-                      : "rounded-bl-md border border-slate-200 bg-slate-50 text-ink"
+                      ? "rounded-br-md bg-[var(--accent)] text-[#1a0b00]"
+                      : "rounded-bl-md border border-white/15 bg-white/8 text-white/90"
                   }`}
                 >
                   {m.content}
@@ -203,21 +150,14 @@ export function AiAssistantPanel({ productName, category, prices, localPrices }:
               </div>
             ))}
             {busy ? (
-              <div className="space-y-2.5 rounded-2xl rounded-bl-md border border-slate-200 bg-slate-50 px-3.5 py-3">
-                <p className="text-[13px] font-medium leading-snug text-slate-700">
-                  Preparing your answer — generating a thoughtful response takes a moment.
-                </p>
-                <div className="space-y-2">
-                  <div className="h-2 w-full animate-pulse rounded bg-violet-200/60" />
-                  <div className="h-2 w-[80%] animate-pulse rounded bg-cyan-200/50" />
-                  <div className="h-2 w-[55%] animate-pulse rounded bg-indigo-200/40" />
-                </div>
+              <div className="rounded-2xl rounded-bl-md border border-white/15 bg-white/5 px-3.5 py-3 text-[13px] text-white/60">
+                Checking Anawiser’s pages…
               </div>
             ) : null}
             <div ref={bottomRef} />
           </div>
 
-          {error ? <p className="px-3 pb-1 text-[11px] text-rose-600">{error}</p> : null}
+          {error ? <p className="px-3 pb-1 text-[11px] text-rose-300">{error}</p> : null}
 
           {!busy && messages.length < 4 ? (
             <div className="flex flex-wrap gap-1.5 px-3 pb-2">
@@ -226,7 +166,7 @@ export function AiAssistantPanel({ productName, category, prices, localPrices }:
                   key={s}
                   type="button"
                   onClick={() => void send(s)}
-                  className="rounded-full border border-violet-300 bg-violet-50 px-2.5 py-1 text-[11px] font-semibold text-violet-800 transition hover:bg-violet-100"
+                  className="rounded-full border border-white/15 bg-white/5 px-2.5 py-1 text-[11px] text-white/80 hover:bg-white/10"
                 >
                   {s}
                 </button>
@@ -235,46 +175,61 @@ export function AiAssistantPanel({ productName, category, prices, localPrices }:
           ) : null}
 
           <form
-            className="border-t border-slate-200 p-3"
+            className="border-t border-white/10 p-3"
             onSubmit={(e) => {
               e.preventDefault();
               void send(input);
             }}
           >
-            <div className="flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 focus-within:border-violet-500 focus-within:ring-2 focus-within:ring-violet-300/50">
+            <div className="flex items-center gap-2 rounded-xl border border-white/15 bg-black/40 px-3 py-2 focus-within:border-[var(--accent)]">
               <input
                 ref={inputRef}
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask Anawiser for assistance"
-                className="min-w-0 flex-1 bg-transparent text-sm font-medium text-ink outline-none placeholder:text-slate-500"
+                placeholder="Got any questions?"
+                className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-white/40"
               />
               <button
                 type="submit"
                 disabled={busy || !input.trim()}
-                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#7c3aed] text-white transition hover:bg-[#8b5cf6] disabled:opacity-40"
+                className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--accent)] text-[#1a0b00] disabled:opacity-40"
                 aria-label="Send"
               >
-                {busy ? (
-                  <LoaderCircle className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="h-3.5 w-3.5" />
-                )}
+                {busy ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
               </button>
             </div>
           </form>
         </div>
       ) : null}
 
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="pointer-events-auto flex h-14 w-14 items-center justify-center rounded-full bg-[#6d28d9] text-white shadow-lg shadow-violet-950/40 transition hover:scale-105 hover:bg-[#7c3aed] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-violet-400"
-        aria-label={open ? "Close Anawiser AI" : "Open Anawiser AI"}
-      >
-        {open ? <ChevronDown className="h-6 w-6" /> : <Bot className="h-6 w-6" />}
-      </button>
+      <div className="pointer-events-auto flex flex-col items-end gap-3">
+        <Link
+          href="/local-admin"
+          className="rounded-full border border-white/25 bg-black/55 px-6 py-3 text-lg font-semibold text-white backdrop-blur-md hover:border-[var(--accent)] hover:text-white md:px-7 md:py-3.5 md:text-xl"
+        >
+          Are you a retailer? Try this
+        </Link>
+        <button
+          type="button"
+          onClick={() => setOpen((v) => !v)}
+          aria-expanded={open}
+          className="flex items-center gap-2 rounded-full bg-[var(--accent)] text-[#1a0b00] shadow-md"
+          aria-label={open ? "Close AnawiserAI" : "Got any questions?"}
+        >
+        {open ? (
+          <span className="flex h-14 w-14 items-center justify-center">
+            <ChevronDown className="h-7 w-7" />
+          </span>
+        ) : (
+          <span className="flex items-center gap-2 py-2.5 pl-2.5 pr-5">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#1a0b00]/10">
+              <Bot className="h-6 w-6" />
+            </span>
+            <span className="text-base font-semibold md:text-lg">Got any questions?</span>
+          </span>
+        )}
+        </button>
+      </div>
     </div>
   );
 }

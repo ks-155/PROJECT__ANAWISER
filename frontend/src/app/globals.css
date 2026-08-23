@@ -1,28 +1,164 @@
 @import "tailwindcss";
 
 :root {
-  --paper: #e8f0fa;
-  --ink: #1a1b3a;
+  --font-parent: var(--font-outfit), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), "Palatino Linotype", Palatino, Georgia, serif;
+  --text: #ffffff;
+  --text-muted: rgba(255, 255, 255, 0.72);
+  --accent: #ff8a3d;
+  --glass: rgba(255, 255, 255, 0.08);
+  --glass-border: rgba(255, 255, 255, 0.18);
 }
 
 @theme inline {
-  --color-paper: var(--paper);
-  --color-ink: var(--ink);
+  --font-sans: var(--font-parent);
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
-  background: linear-gradient(180deg, #e8f0fa 0%, #d7e4f6 100%);
-  color: var(--ink);
+  min-height: 100%;
+  margin: 0;
+  font-family: var(--font-parent);
+  color: var(--text);
+  background: #050505;
 }
 
-.panel-frost {
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  background: rgba(255, 255, 255, 0.88);
-  box-shadow: 0 14px 44px rgba(15, 23, 42, 0.12);
-  backdrop-filter: blur(16px);
+.page-glow {
+  position: relative;
+  isolation: isolate;
+  min-height: 100vh;
 }
 
-.heading-strong {
-  font-weight: 700;
-  letter-spacing: -0.03em;
+.orb {
+  position: fixed;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: 50%;
+  filter: blur(90px);
+}
+
+.orb-amber {
+  width: min(48rem, 90vw);
+  height: min(48rem, 90vw);
+  left: -12vw;
+  bottom: -8vh;
+  background: #ff7a2e;
+  opacity: 0.38;
+}
+
+.orb-rose {
+  width: min(40rem, 80vw);
+  height: min(40rem, 80vw);
+  right: -10vw;
+  top: -8vh;
+  background: #8b1a2b;
+  opacity: 0.4;
+}
+
+.orb-amber-mid {
+  width: min(28rem, 60vw);
+  height: min(28rem, 60vw);
+  left: 38%;
+  top: 42%;
+  background: #ff9a4a;
+  opacity: 0.18;
+}
+
+.glass {
+  background: var(--glass);
+  backdrop-filter: blur(28px) saturate(1.25);
+  -webkit-backdrop-filter: blur(28px) saturate(1.25);
+  border: 1px solid var(--glass-border);
+  border-radius: 1.75rem;
+}
+
+.logo-mark {
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.tagline-display {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  line-height: 1.35;
+}
+
+.spline-hero {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 1.75rem;
+  background: #2a0c0c;
+}
+
+.spline-hero > div,
+.spline-hero canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.field-ghost {
+  width: 100%;
+  font-family: var(--font-parent);
+  border-radius: 0.85rem;
+  border: 1px solid var(--glass-border);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.8rem 1.05rem;
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  outline: none;
+}
+
+.field-ghost.field-icon {
+  padding-left: 2.85rem;
+}
+
+.field-ghost:focus {
+  border-color: var(--accent);
+}
+
+.field-ghost option {
+  background: #111;
+  color: var(--text);
+}
+
+.btn-accent {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: var(--accent);
+  padding: 0.7rem 1.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #1a0b00;
+}
+
+.btn-accent:hover {
+  filter: brightness(1.08);
+}
+
+.btn-ghost {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--glass-border);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 0.7rem 1.35rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.btn-ghost:hover {
+  background: rgba(255, 255, 255, 0.1);
 }

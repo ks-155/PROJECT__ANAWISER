@@ -1,9 +1,12 @@
 import { NextResponse } from "next/server";
 import { addProduct, addSnapshot } from "@/lib/store";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function POST(req: Request) {
   try {
-    const { storeName, productName, price, url } = await req.json();
+    const { storeName, productName, price, url, couponCode, festivalNote } = await req.json();
     if (!storeName || !productName || price === undefined) {
       return NextResponse.json({ error: "storeName, productName, and price are required" }, { status: 400 });
     }
@@ -12,7 +15,12 @@ export async function POST(req: Request) {
       url: url || `local://${slug}/${Date.now()}`,
       name: productName,
       desiredPrice: null,
-      attributes: { isLocal: "true", storeName },
+      attributes: {
+        isLocal: "true",
+        storeName,
+        ...(couponCode ? { couponCode: String(couponCode).trim() } : {}),
+        ...(festivalNote ? { festivalNote: String(festivalNote).trim() } : {}),
+      },
     });
     await addSnapshot({
       productId: product.id,

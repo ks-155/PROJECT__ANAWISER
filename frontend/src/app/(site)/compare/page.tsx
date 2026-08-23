@@ -1,5 +1,5 @@
 import { AnawiserDashboard } from "@/components/stock-radar-dashboard";
 
-export default function Home() {
+export default function ComparePage() {
   return <AnawiserDashboard />;
 }

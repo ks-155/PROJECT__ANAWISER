@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server";
 import { askAssistant, ANAWISER_AI } from "@/lib/assistant";
+import { geminiApiKey } from "@/lib/env";
 
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 
 export async function GET() {
-  const key = process.env.GEMINI_API_KEY?.trim() || "";
+  const key = geminiApiKey();
   return NextResponse.json({
     ok: true,
     configured: Boolean(key),
@@ -18,7 +20,9 @@ export async function GET() {
 export async function POST(request: Request) {
   const body = await request.json().catch(() => ({}));
   const message = String(body.message || "").trim();
-  if (!message) return NextResponse.json({ ok: false, error: "message is required" }, { status: 400 });
+  if (!message) {
+    return NextResponse.json({ ok: false, error: "message is required" }, { status: 400 });
+  }
   try {
     const result = await askAssistant({
       message,

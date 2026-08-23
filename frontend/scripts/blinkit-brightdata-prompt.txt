@@ -1,0 +1,54 @@
+Paste this into Bright Data Web Scraper Studio as the collector / AI field prompt for Blinkit (blinkit.com) product pages. It has no less-than or greater-than characters.
+
+Goal: emit one JSON object per product that can be joined to our existing Amazon and Flipkart records on brand plus model plus pack_size, or on gtin / sku. Do not invent prices, titles, or discounts.
+
+Schema (keep these exact keys):
+
+{
+  "source": "blinkit",
+  "source_url": "",
+  "scraped_at": "",
+  "title": "",
+  "brand": "",
+  "model": "",
+  "pack_size": "",
+  "gtin": "",
+  "sku": "",
+  "category": "",
+  "selling_price_inr": null,
+  "mrp_inr": null,
+  "discount_percent": null,
+  "currency": "INR",
+  "in_stock": null,
+  "eta_minutes": null,
+  "coupon_code": "",
+  "offers": [],
+  "unit_price_inr": null,
+  "unit": "",
+  "match_key": ""
+}
+
+Rules:
+1. Only read visible public product data on the Blinkit page. If a field is missing, use null or an empty string.
+2. selling_price_inr is the rupee amount the shopper pays now. Ignore strikethrough MRP.
+3. mrp_inr is the crossed-out MRP figure if shown. If MRP is absent, use null. Do not copy selling_price into mrp.
+4. discount_percent equals round((mrp_inr - selling_price_inr) / mrp_inr * 100) only when both prices exist and mrp is higher than selling.
+5. coupon_code: copy a code only if the page literally shows coupon or use code. Never generate fake codes such as SAVE10.
+6. offers: short strings already on the page (bank offer, free delivery, combo). Maximum 5. No HTML.
+7. title: keep Blinkit's full listing name so we can fuzzy-match Flipkart and Amazon titles.
+8. brand, model, pack_size: split the title the way grocery and electronics PDPs do. Example: brand=Samsung, model=Galaxy A35 5G, pack_size=8GB/128GB.
+9. match_key: lowercase, strip punctuation, concatenate brand then model then pack_size with single spaces. Example: samsung galaxy a35 5g 8gb 128gb. This must be comparable to Amazon and Flipkart match_key.
+10. eta_minutes: delivery promise if shown (Blinkit often shows minutes). Else null.
+11. in_stock: true if the page allows add-to-cart, false if sold out or currently unavailable, null if unclear.
+12. unit_price_inr and unit: if Blinkit shows rupees per 100g or per litre, capture that so grocery items align with Flipkart and Amazon pack sizes.
+13. Ignore login walls, ads, related products, and other SKUs on the page.
+14. Numbers: integers in INR, no commas, no rupee sign in JSON.
+15. If the page is a search or category grid, skip it. This collector is product-detail only.
+
+Join guidance for Anawiser:
+- Primary join: gtin if both sides have it.
+- Else match_key exact.
+- Else brand equality plus model token overlap of at least 0.8 and pack_size equal.
+- Never join only on selling_price_inr.
+
+Self-heal hint if a field is undefined: keep the same collector; re-read the visible selling price, MRP strike, stock CTA, and offer chips. Do not change the schema.

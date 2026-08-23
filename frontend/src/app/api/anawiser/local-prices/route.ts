@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { getProducts, getLatestSnapshot } from "@/lib/store";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function GET(req: Request) {
   try {
     const productName = new URL(req.url).searchParams.get("productName");

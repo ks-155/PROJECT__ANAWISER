@@ -1,5 +1,10 @@
 export type Platform = "amazon" | "flipkart" | "blinkit" | "croma" | "reliance" | "dmart";
-export type CategoryName = "Electronics" | "Bags & Travel" | "Food (Protein)";
+export type CategoryName =
+  | "Electronics"
+  | "Bags & Travel"
+  | "Food (Protein)"
+  | "Apparel"
+  | "Home";
 
 export interface CatalogProduct {
   id: string;
@@ -708,6 +713,36 @@ export const CATALOG: CatalogProduct[] = [
       blinkit: "https://blinkit.com/s/?q=Samsung%20Galaxy%20A57%205G%20Awesome%20Lilac%20256GB"
     }
   },
+  {
+    id: "dataset-led-tv",
+    name: "LED Television",
+    category: "Electronics",
+    urls: {},
+  },
+  {
+    id: "dataset-mens-jeans",
+    name: "Men's Jeans",
+    category: "Apparel",
+    urls: {},
+  },
+  {
+    id: "dataset-casual-tshirt",
+    name: "Casual T-shirt",
+    category: "Apparel",
+    urls: {},
+  },
+  {
+    id: "dataset-living-sofa",
+    name: "Living room sofa",
+    category: "Home",
+    urls: {},
+  },
 ];
 
-export const CATEGORIES: CategoryName[] = ["Electronics", "Bags & Travel", "Food (Protein)"];
+export const CATEGORIES: CategoryName[] = [
+  "Electronics",
+  "Bags & Travel",
+  "Food (Protein)",
+  "Apparel",
+  "Home",
+];
