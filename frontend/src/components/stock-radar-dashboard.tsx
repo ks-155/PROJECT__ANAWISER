@@ -1,253 +1,189 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { LoaderCircle, Plus, Activity, Bell, PackageOpen, Tag, RefreshCw, Store } from "lucide-react";
-import Link from "next/link";
+import { LoaderCircle, MapPin } from "lucide-react";
+import { Sidebar } from "./sidebar";
+import { CATALOG, CATEGORIES, CategoryName, CatalogProduct, Platform } from "@/lib/catalog";
 
 export function AnawiserDashboard() {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [url, setUrl] = useState("");
-  const [desiredPrice, setDesiredPrice] = useState("");
-  const [alerts, setAlerts] = useState<string[]>([]);
-  const [busyProductId, setBusyProductId] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<CategoryName | "">("");
+  const [selectedProduct, setSelectedProduct] = useState<CatalogProduct | null>(null);
+  const [loadingPrices, setLoadingPrices] = useState(false);
+  const [prices, setPrices] = useState<Record<string, { price: number | null; status: string }>>({});
+  
+  const [localPrices, setLocalPrices] = useState<any[]>([]);
+  const [loadingLocal, setLoadingLocal] = useState(false);
 
-  const fetchProducts = async () => {
+  // Available products for the selected category
+  const products = CATALOG.filter((p) => p.category === selectedCategory);
+
+  const fetchOnlinePrices = async (product: CatalogProduct) => {
+    setLoadingPrices(true);
+    setPrices({}); // clear old prices
+    
+    // We will call the backend API to scrape these platforms
     try {
-      const res = await fetch("/api/anawiser/products");
-      const data = await res.json();
-      setProducts(data.products || []);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const handleAddProduct = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!url) return;
-
-    try {
-      setLoading(true);
-      await fetch("/api/anawiser/products", {
+      const res = await fetch("/api/anawiser/scrape-online", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url, desiredPrice: desiredPrice || null }),
+        body: JSON.stringify({ productId: product.id, urls: product.urls }),
       });
-      setUrl("");
-      setDesiredPrice("");
-      await fetchProducts();
+      const data = await res.json();
+      setPrices(data.results || {});
     } catch (err) {
-      console.error(err);
-      setLoading(false);
+      console.error("Failed to fetch online prices", err);
+    } finally {
+      setLoadingPrices(false);
     }
   };
 
-  const handleRunCheck = async (productId: string) => {
-    try {
-      setBusyProductId(productId);
-      const res = await fetch("/api/anawiser/check", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ productId }),
-      });
-      const data = await res.json();
-      
-      if (data.alert) {
-        setAlerts((prev) => [data.alert, ...prev].slice(0, 5)); // keep last 5 alerts
-      }
-      
-      await fetchProducts();
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setBusyProductId(null);
+  const handleProductChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const prodId = e.target.value;
+    const prod = CATALOG.find((p) => p.id === prodId) || null;
+    setSelectedProduct(prod);
+    setLocalPrices([]);
+    if (prod) {
+      fetchOnlinePrices(prod);
     }
   };
+
+  const fetchLocalStoresPrice = async () => {
+    if (!selectedProduct) return;
+    setLoadingLocal(true);
+    try {
+      // The backend will query the DB for local products that match this name/category
+      const res = await fetch(`/api/anawiser/local-prices?productName=${encodeURIComponent(selectedProduct.name)}`);
+      const data = await res.json();
+      setLocalPrices(data.products || []);
+    } catch (err) {
+      console.error("Failed to fetch local prices", err);
+    } finally {
+      setLoadingLocal(false);
+    }
+  };
+
+  const platforms: Platform[] = ["flipkart", "blinkit", "croma", "reliance", "dmart", "amazon"];
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-5 pb-24 pt-8 md:px-8 font-sans bg-slate-50 min-h-screen">
-      <header className="mb-10 relative overflow-hidden rounded-3xl bg-slate-900 px-6 py-12 md:px-12 text-white shadow-2xl border border-slate-800">
+    <div className="flex min-h-screen bg-slate-50 font-sans">
+      <Sidebar />
+      
+      <main className="flex-1 p-8 md:p-12 max-w-5xl">
+        <h1 className="text-3xl font-bold text-slate-800 mb-8 font-display">Welcome to Anawiser!</h1>
         
-        {/* SPLINE 3D PLACEHOLDER
-            When you're ready to add your Spline design, install @splinetool/react-spline 
-            and replace this background div with your Spline component:
-            <div className="absolute inset-0 z-0 opacity-60">
-              <Spline scene="https://prod.spline.design/YOUR-SCENE-URL/scene.splinecode" />
-            </div>
-        */}
-        <div className="absolute inset-0 z-0 bg-gradient-to-br from-slate-900 via-indigo-950 to-slate-900" />
-        <div className="absolute top-0 right-0 -mr-20 -mt-20 h-96 w-96 rounded-full bg-teal-500/20 blur-3xl mix-blend-screen z-0" />
-        <div className="absolute bottom-0 left-0 -ml-20 -mb-20 h-72 w-72 rounded-full bg-indigo-500/20 blur-3xl mix-blend-screen z-0" />
-
-        <div className="relative z-10 flex flex-col md:flex-row md:justify-between md:items-start gap-6">
+        <div className="space-y-6 max-w-2xl mb-12">
           <div>
-            <div className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.22em] text-teal-400 mb-6 bg-teal-950/50 w-fit px-3 py-1.5 rounded-full border border-teal-800/50 backdrop-blur-sm">
-              <Activity className="h-4 w-4" />
-              <span>Anawiser MVP</span>
-            </div>
-            <h1 className="max-w-2xl font-display text-4xl leading-[1.1] tracking-tight md:text-5xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">
-              Real-Time Stock Availability & Price Drop Alerts
-            </h1>
-            <p className="mt-5 max-w-xl text-lg leading-relaxed text-slate-300 font-light">
-              Monitor high-demand products across local shops and retailers. Get instant alerts when items restock or drop below your desired price.
-            </p>
+            <label className="block text-sm font-medium text-slate-700 mb-2">Select category of products</label>
+            <select 
+              className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none"
+              value={selectedCategory}
+              onChange={(e) => {
+                setSelectedCategory(e.target.value as CategoryName);
+                setSelectedProduct(null);
+                setPrices({});
+                setLocalPrices([]);
+              }}
+            >
+              <option value="">-- Choose a category --</option>
+              {CATEGORIES.map((cat) => (
+                <option key={cat} value={cat}>{cat}</option>
+              ))}
+            </select>
           </div>
-          <Link href="/local-admin" className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-white/10 hover:bg-white/20 px-6 py-3 text-sm font-medium transition-all duration-300 border border-white/10 w-fit backdrop-blur-md shadow-lg hover:shadow-white/5 hover:-translate-y-0.5">
-            <Store className="h-4 w-4" />
-            Local Store Admin
-          </Link>
-        </div>
-      </header>
 
-      <div className="grid md:grid-cols-[1fr_350px] gap-8">
-        
-        {/* Main Content */}
-        <div className="space-y-8">
-          {/* Add Product Form */}
-          <section className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-sm border border-slate-200/60 p-6 md:p-8 transition-all hover:shadow-md">
-            <h2 className="text-xl font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <Plus className="h-5 w-5 text-slate-400" />
-              Add Product to Monitor
-            </h2>
-            <form onSubmit={handleAddProduct} className="flex flex-col gap-4">
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Product URL</label>
-                <input
-                  type="url"
-                  required
-                  value={url}
-                  onChange={(e) => setUrl(e.target.value)}
-                  placeholder="https://example.com/product/123"
-                  className="w-full rounded-lg border-slate-300 border px-4 py-2 text-sm focus:border-teal-500 focus:ring-teal-500 outline-none"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-slate-600 mb-1">Desired Price (Optional)</label>
-                <div className="relative">
-                  <span className="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">₹</span>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={desiredPrice}
-                    onChange={(e) => setDesiredPrice(e.target.value)}
-                    placeholder="199.99"
-                    className="w-full rounded-lg border-slate-300 border pl-8 pr-4 py-2 text-sm focus:border-teal-500 focus:ring-teal-500 outline-none"
-                  />
-                </div>
-              </div>
-              <button
-                type="submit"
-                disabled={loading}
-                className="mt-2 w-full sm:w-auto self-start rounded-lg bg-teal-600 px-6 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-teal-700 disabled:opacity-50 transition-colors"
+          {selectedCategory && (
+            <div>
+              <label className="block text-sm font-medium text-slate-700 mb-2">Select product</label>
+              <select 
+                className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 outline-none"
+                value={selectedProduct?.id || ""}
+                onChange={handleProductChange}
               >
-                Start Monitoring
-              </button>
-            </form>
-          </section>
-
-          {/* Monitored Products List */}
-          <section>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-xl font-semibold text-slate-800">Monitored Products</h2>
-              <button onClick={fetchProducts} className="text-slate-400 hover:text-teal-600 transition-colors">
-                <RefreshCw className="h-5 w-5" />
-              </button>
+                <option value="">-- Choose a product --</option>
+                {products.map((p) => (
+                  <option key={p.id} value={p.id}>{p.name}</option>
+                ))}
+              </select>
             </div>
-            
-            {loading ? (
-              <div className="flex justify-center p-10"><LoaderCircle className="h-6 w-6 animate-spin text-teal-600" /></div>
-            ) : products.length === 0 ? (
-              <div className="text-center p-10 border border-dashed border-slate-300 rounded-xl text-slate-500">
-                No products being monitored yet.
-              </div>
-            ) : (
-              <div className="grid gap-4">
-                {products.map((product) => {
-                  const isLocal = product.attributes?.isLocal === "true";
-                  const storeName = isLocal 
-                    ? product.attributes?.storeName 
-                    : (product.url.includes("amazon") ? "Amazon" : "Online Retailer");
-                    
-                  return (
-                  <div key={product.id} className="bg-white rounded-xl shadow-sm border border-slate-200 p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className={`inline-flex items-center gap-1 rounded px-2 py-0.5 text-xs font-semibold ${isLocal ? 'bg-indigo-100 text-indigo-700' : 'bg-slate-100 text-slate-700'}`}>
-                           {isLocal ? <Store className="h-3 w-3"/> : null}
-                           {storeName}
-                        </span>
-                      </div>
-                      <a href={product.url.startsWith("local://") ? "#" : product.url} target={product.url.startsWith("local://") ? undefined : "_blank"} rel="noreferrer" className="text-sm font-medium text-teal-600 hover:underline truncate block">
-                        {product.name || product.url}
-                      </a>
-                      <div className="mt-2 flex flex-wrap gap-3 text-xs text-slate-500">
-                        {product.desiredPrice && (
-                          <span className="flex items-center gap-1">
-                            <Tag className="h-3.5 w-3.5" />
-                            Target: ₹{product.desiredPrice}
-                          </span>
-                        )}
-                        <span className="flex items-center gap-1">
-                          <PackageOpen className="h-3.5 w-3.5" />
-                          Status: 
-                          <span className={product.latest?.inStock ? "text-emerald-600 font-semibold" : "text-red-500 font-semibold"}>
-                            {product.latest ? (product.latest.inStock ? " In Stock" : " Out of Stock") : " Unknown"}
-                          </span>
-                        </span>
-                        {product.latest?.price && (
-                          <span className="font-semibold text-slate-700">
-                            Current: ₹{product.latest.price.toFixed(2)}
-                          </span>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {!isLocal && (
-                      <button
-                        onClick={() => handleRunCheck(product.id)}
-                        disabled={busyProductId === product.id}
-                        className="shrink-0 rounded-lg border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-medium text-slate-700 hover:bg-slate-100 disabled:opacity-50 transition-colors flex items-center justify-center gap-2"
-                      >
-                        {busyProductId === product.id ? <LoaderCircle className="h-4 w-4 animate-spin" /> : <Activity className="h-4 w-4" />}
-                        Check Now
-                      </button>
-                    )}
-                  </div>
-                )})}
-              </div>
-            )}
-          </section>
+          )}
         </div>
 
-        {/* Sidebar Alerts */}
-        <aside>
-          <div className="sticky top-8 bg-slate-50 rounded-xl border border-slate-200 p-5 min-h-[400px]">
-            <h3 className="font-semibold text-slate-800 mb-4 flex items-center gap-2">
-              <Bell className="h-5 w-5 text-amber-500" />
-              Alerts
-            </h3>
-            <div className="space-y-3">
-              {alerts.length === 0 ? (
-                <p className="text-sm text-slate-500 italic">No alerts triggered yet. Click "Check Now" on a product to run a price check.</p>
+        {selectedProduct && (
+          <div className="flex flex-col md:flex-row gap-8 items-start">
+            
+            {/* Online Prices Box */}
+            <div className="bg-white rounded-3xl shadow-sm border border-slate-200 p-8 w-full max-w-md">
+              <h2 className="text-lg font-semibold text-slate-800 mb-6 border-b pb-4">Online Prices (INR)</h2>
+              
+              {loadingPrices ? (
+                <div className="flex flex-col items-center justify-center py-12 text-slate-400 gap-3">
+                  <LoaderCircle className="h-8 w-8 animate-spin text-indigo-600" />
+                  <p className="text-sm">Scraping prices using Bright Data...</p>
+                </div>
               ) : (
-                alerts.map((alert, i) => (
-                  <div key={i} className="bg-white p-3 rounded-lg border border-emerald-100 shadow-sm text-sm text-slate-700 whitespace-pre-wrap">
-                    {alert}
-                  </div>
-                ))
+                <div className="space-y-4">
+                  {platforms.map((platform) => {
+                    const url = selectedProduct.urls[platform];
+                    if (!url) return null; // Skip if this product isn't available on this platform
+
+                    const data = prices[platform];
+                    return (
+                      <div key={platform} className="flex justify-between items-center py-2">
+                        <span className="capitalize font-medium text-slate-700">{platform} price</span>
+                        {data ? (
+                          <span className="font-bold text-slate-900">
+                            {data.price ? `₹${data.price}` : <span className="text-red-500 text-sm">{data.status}</span>}
+                          </span>
+                        ) : (
+                          <span className="text-sm text-slate-400">Not checked</span>
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               )}
             </div>
-          </div>
-        </aside>
 
-      </div>
+            {/* Local Stores */}
+            <div className="flex-1 flex flex-col items-center justify-center gap-6 pt-12 md:pt-0">
+              <button 
+                onClick={fetchLocalStoresPrice}
+                disabled={loadingLocal}
+                className="rounded-2xl border-2 border-indigo-600 bg-indigo-50 px-8 py-4 text-indigo-700 font-semibold shadow-sm hover:bg-indigo-100 transition-colors disabled:opacity-50 flex items-center gap-2"
+              >
+                {loadingLocal ? <LoaderCircle className="h-5 w-5 animate-spin" /> : <MapPin className="h-5 w-5" />}
+                check local stores price
+              </button>
+
+              {localPrices.length > 0 && (
+                <div className="w-full bg-white rounded-3xl shadow-sm border border-slate-200 p-6 mt-4">
+                  <h3 className="font-semibold text-slate-800 mb-4">Nearby Availability</h3>
+                  <div className="space-y-4">
+                    {localPrices.map((lp) => (
+                      <div key={lp.id} className="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
+                        <div>
+                          <p className="font-medium text-slate-800">{lp.attributes?.storeName || "Local Store"}</p>
+                          <p className="text-xs text-slate-500">{lp.attributes?.storeAddress || "Generic Local Link"}</p>
+                        </div>
+                        <div className="text-right">
+                          <p className="font-bold text-slate-900">₹{lp.latest?.price || lp.desiredPrice || "N/A"}</p>
+                          <span className="text-xs text-emerald-600 font-medium">In Stock</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {!loadingLocal && localPrices.length === 0 && selectedProduct && (
+                <p className="text-sm text-slate-400 italic">No local prices found for this product yet.</p>
+              )}
+            </div>
+
+          </div>
+        )}
+
+      </main>
     </div>
   );
 }
