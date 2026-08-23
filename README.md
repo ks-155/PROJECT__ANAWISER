@@ -110,8 +110,8 @@ In the app:
 - User still gets Web Unlocker / estimate so the page does not wait 15 minutes
 - Quiet control **Repair collector (Self-Healing)** → `POST /api/anawiser/heal`
 Never put `BRIGHT_DATA_API_TOKEN` in git or a demo recording.
-## Local product photos (D:\dataset_1 and D:\Dataset_2)
-The site is trained on those folders: phones from dataset_1, and jeans / t-shirts / sofas / TVs from Dataset_2.
+## Local product photos (dataset_1 and Dataset_2)
+The site is trained on those folders: dataset_1, Dataset_2.
 ```bash
 cd frontend
 npm run datasets:sync
