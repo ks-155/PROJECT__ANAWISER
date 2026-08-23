@@ -7,5 +7,7 @@
       ".": "./src/engine.ts",
       "./assistant": "./src/assistant.ts"
     },
-    "dependencies": {}
+    "dependencies": {
+        "@anawiser/backend": "file:../backend"
+    }
 }

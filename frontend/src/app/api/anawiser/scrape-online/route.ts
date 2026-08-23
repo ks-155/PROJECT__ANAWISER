@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import * as cheerio from "cheerio";
 
+export const dynamic = "force-dynamic";
+export const maxDuration = 60;
+
 const API_BASE     = "https://api.brightdata.com";
 const POLL_INTERVAL = 3500;
 const MAX_POLLS     = 25;

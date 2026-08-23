@@ -11,8 +11,8 @@
     "collectors:run": "node scripts/run-collectors.mjs"
   },
   "dependencies": {
-    "@anawiser/ai-scraper": "*",
-    "@anawiser/backend": "*",
+    "@anawiser/ai-scraper": "file:../ai-scraper",
+    "@anawiser/backend": "file:../backend",
     "@react-three/drei": "^10.7.8",
     "@react-three/fiber": "^9.7.0",
     "@splinetool/react-spline": "4.1.0",

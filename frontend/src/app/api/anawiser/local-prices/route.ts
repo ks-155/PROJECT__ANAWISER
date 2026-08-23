@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { getProducts, getLatestSnapshot } from "../../../../../../backend/src/store";
+import { getProducts, getLatestSnapshot } from "@anawiser/backend";
 
 export async function GET(req: Request) {
   try {
