@@ -4,8 +4,6 @@ const nextConfig: NextConfig = {
   transpilePackages: [
     "@anawiser/backend",
     "@anawiser/ai-scraper",
-    "@splinetool/runtime",
-    "@splinetool/react-spline",
   ],
   typescript: {
     ignoreBuildErrors: true,

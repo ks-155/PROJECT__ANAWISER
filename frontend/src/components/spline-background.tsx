@@ -1,25 +1,9 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { Application } from "@splinetool/runtime";
 
-/**
- * Anawiser Spline 3D background (official @splinetool/runtime).
- *
- * Swap SCENE_URL for your own design:
- * 1. Open https://spline.design/ and create/remix a scene (shopping tags, charts, soft shapes).
- * 2. Click Export → Code → Vanilla JS / React (or Public URL).
- * 3. Copy the `https://prod.spline.design/.../scene.splinecode` link.
- * 4. Paste it below (or set NEXT_PUBLIC_SPLINE_SCENE_URL in frontend/.env.local).
- *
- * Tip: keep the scene sparse and light-colored so low opacity + the wash overlay stay readable.
- *
- * Note: We load via `@splinetool/runtime` (same engine as `@splinetool/react-spline`) because
- * Next.js 16’s bundler cannot resolve react-spline’s ESM-only package exports reliably.
- */
 export const SCENE_URL =
   process.env.NEXT_PUBLIC_SPLINE_SCENE_URL ??
-  // Soft abstract “data / product” vibe from Spline’s public Next.js demo export
   "https://prod.spline.design/KFonZGtsoUXP-qx7/scene.splinecode";
 
 export function SplineBackground() {
@@ -29,21 +13,31 @@ export function SplineBackground() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const app = new Application(canvas);
     let disposed = false;
+    let appInstance: any = null;
 
-    app.load(SCENE_URL).catch((err: unknown) => {
-      if (!disposed) {
-        console.warn("[Anawiser] Spline scene failed to load", err);
-      }
-    });
+    import("@splinetool/runtime")
+      .then(({ Application }) => {
+        if (disposed) return;
+        appInstance = new Application(canvas);
+        appInstance.load(SCENE_URL).catch((err: unknown) => {
+          if (!disposed) {
+            console.warn("[Anawiser] Spline scene failed to load", err);
+          }
+        });
+      })
+      .catch((err) => {
+        console.warn("[Anawiser] Spline runtime failed to import", err);
+      });
 
     return () => {
       disposed = true;
-      try {
-        app.dispose();
-      } catch {
-        // ignore teardown races
+      if (appInstance) {
+        try {
+          appInstance.dispose();
+        } catch {
+          // ignore teardown races
+        }
       }
     };
   }, []);
@@ -57,14 +51,8 @@ export function SplineBackground() {
         <canvas ref={canvasRef} className="h-full w-full" />
       </div>
 
-      {/* Soft wash so slate/indigo UI + AI panel stay readable */}
-      <div
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "radial-gradient(ellipse 80% 60% at 70% 20%, rgba(99,102,241,0.06), transparent 55%), radial-gradient(ellipse 70% 50% at 15% 80%, rgba(15,118,110,0.04), transparent 50%), linear-gradient(to bottom right, rgba(248,250,252,0.78), rgba(238,242,255,0.55))",
-        }}
-      />
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#e8f0fa]/85 via-[#e8f0fa]/70 to-[#dce8f8]/90" />
+      <div className="aegis-grid pointer-events-none absolute inset-0 opacity-40" />
     </div>
   );
 }
