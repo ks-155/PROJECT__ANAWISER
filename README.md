@@ -1,5 +1,8 @@
 # Anawiser
 
+<img width="1894" height="1199" alt="Screenshot 2026-08-23 232528" src="https://github.com/user-attachments/assets/91f460c4-e24e-4e6f-9a5b-23db71702ed9" />
+
+
 Private Indian e-commerce price comparison. Next.js on Vercel, **public** prices via Bright Data, local shops in Supabase, optional Gemini chat.
 
 Spline 3D is the page background. UI type uses one parent font (Outfit) with a dark halo so labels stay visible on the scene. Tokens stay in `.env.local` and are gitignored.
