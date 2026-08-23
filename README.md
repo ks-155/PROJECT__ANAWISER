@@ -6,6 +6,57 @@
 <img width="1890" height="966" alt="Screenshot 2026-08-23 232734 (1)" src="https://github.com/user-attachments/assets/0f668246-d11d-4160-91e1-a967ef128381" />
 
 
+# Anawiser
+### *Analyser & Wiser*
+
+A price-intelligence tool that helps local retailers stay competitive against e-commerce platforms — and helps online shoppers find the best deals.
+
+---
+
+## The Problem
+
+During major sale seasons like **Big Billion Days** and the **Great Indian Festival**, e-commerce platforms roll out steep discounts. Online sellers can do this because they have deep visibility into market pricing and tight control over their supply chains.
+
+Local retail shopkeepers don't have that same advantage. They're often unaware of real-time online pricing for the products they sell, which puts them at a disadvantage even when they could otherwise compete — and their sales take a hit every festive season as a result.
+
+## Who It's For
+
+- **Retail Businesses / Shopkeepers** — competing against e-commerce discounts during big sale events, with little visibility into current online market prices.
+- **Online Buyers** — looking to track the best available prices and save on every discounted purchase.
+
+## Our Solution
+
+Anawiser lets retailers list their products online so that anyone — buyers or the retailers themselves — can instantly see how their prices stack up against major e-commerce platforms.
+
+### Trust & Verification
+
+Retailer-submitted product and pricing information can't always be independently verified, so Anawiser relies on a **community rating system**: users rate the stores they interact with. If a store's rating drops too low, buyers are shown a warning before they reach out to that retailer — building trust into the platform without needing manual verification.
+
+## What Makes Anawiser Different
+
+- **Live market data via Bright Data web scrapers** — pulls real pricing information from major e-commerce platforms including **Amazon, Flipkart, and Blinkit**, giving retailers an actual picture of where they stand in the market.
+  > *Note: as this is currently a demo, the scraped data isn't as well-organized as we'd like yet — but the pipeline works, and building a custom AI-powered scraper from scratch with Bright Data was one of our favorite parts of the build.*
+- **AI Chat Assistant** — built into the platform to help users understand and navigate the product.
+
+## Tech Stack
+
+| Component | Tool |
+|---|---|
+| Web Scraping | Bright Data (custom AI-built scrapers) |
+| Scraped Sources | Amazon, Flipkart, Blinkit |
+| Product Imagery | Kaggle datasets |
+| 3D Design | Spline |
+| User Support | In-app AI chat assistant |
+
+## Project Status
+
+Anawiser is currently a **demo/early-stage build**. Core scraping and comparison functionality is working; data organization and the retailer rating system are still being refined.
+
+---
+
+*Built for shopkeepers who deserve a fair shot against the sale-season discount wars — and for buyers who just want a good deal.*
+
+
 
 **Pages:** Home, Compare, About, Docs, Contact, Local admin (`/local-admin`).
 ## How we use Bright Data Scraper Studio
