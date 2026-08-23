@@ -1,18 +1,9 @@
 {
   "private": true,
-  "name": "anawiser-workspace",
-  "workspaces": [
-    "frontend",
-    "backend",
-    "ai-scraper"
-  ],
   "scripts": {
-    "build": "npm run build --workspace=frontend",
-    "dev": "npm run dev --workspace=frontend",
-    "start": "npm run start --workspace=frontend"
-  },
-  "overrides": {
-    "@splinetool/runtime": "1.12.98"
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "start": "npm --prefix frontend run start"
   },
   "engines": {
     "node": "20.x"

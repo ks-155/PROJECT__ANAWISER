@@ -137,7 +137,7 @@ export function AiAssistantPanel({ productName, category, prices, localPrices }:
         >
           <header className="flex items-start justify-between gap-2 border-b border-violet-700/40 bg-gradient-to-r from-violet-700 to-indigo-700 px-4 py-3">
             <div className="min-w-0 pt-0.5">
-              <h2 className="truncate font-display text-[16px] font-bold tracking-tight text-white">
+              <h2 className="truncate text-[16px] font-bold tracking-tight text-white">
                 Anawiser
               </h2>
               <p className="mt-0.5 text-[12px] font-medium text-violet-50">Anawiser&apos;s AI assistant</p>

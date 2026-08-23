@@ -1,34 +1,19 @@
 import { NextResponse } from "next/server";
-import { addProduct, addSnapshot } from "@anawiser/backend";
+import { addProduct, addSnapshot } from "@/lib/store";
 
 export async function POST(req: Request) {
   try {
     const { storeName, productName, price, url } = await req.json();
-
     if (!storeName || !productName || price === undefined) {
-      return NextResponse.json(
-        { error: "storeName, productName, and price are required" },
-        { status: 400 }
-      );
+      return NextResponse.json({ error: "storeName, productName, and price are required" }, { status: 400 });
     }
-
-    // Generate a unique URL for local products if none is provided
-    const safeStore = storeName.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
-    const safeProduct = productName.replace(/[^a-zA-Z0-9]/g, "-").toLowerCase();
-    const productUrl = url || `local://${safeStore}/${safeProduct}/${Date.now()}`;
-
-    // 1. Add the product with local attributes
+    const slug = `${storeName}-${productName}`.toLowerCase().replace(/[^a-z0-9]+/g, "-");
     const product = await addProduct({
-      url: productUrl,
+      url: url || `local://${slug}/${Date.now()}`,
       name: productName,
-      desiredPrice: null, // Local admins aren't setting a desired price, they are posting the current price
-      attributes: {
-        isLocal: "true",
-        storeName: storeName,
-      },
+      desiredPrice: null,
+      attributes: { isLocal: "true", storeName },
     });
-
-    // 2. Add the initial price snapshot so it appears on the dashboard immediately
     await addSnapshot({
       productId: product.id,
       price: Number(price),
@@ -36,13 +21,9 @@ export async function POST(req: Request) {
       currency: "INR",
       stockText: "In Stock (Local Store)",
     });
-
     return NextResponse.json({ success: true, product });
-  } catch (error: any) {
-    console.error("Local add error:", error);
-    return NextResponse.json(
-      { error: error.message || "Failed to add local product" },
-      { status: 500 }
-    );
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to add local product";
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

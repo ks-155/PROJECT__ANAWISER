@@ -1,19 +1,13 @@
 "use client";
 
-import dynamic from "next/dynamic";
 import { useEffect, useState, useCallback } from "react";
 import {
   LoaderCircle, MapPin, RefreshCw, TrendingDown, TrendingUp,
-  Minus, ExternalLink, ShieldCheck, Zap, Award
+  Minus, ExternalLink, ShieldCheck, Award
 } from "lucide-react";
 import { Sidebar } from "./sidebar";
 import { AiAssistantPanel } from "./ai-assistant";
 import { CATALOG, CATEGORIES, CategoryName, CatalogProduct, Platform } from "@/lib/catalog";
-
-const Anawiser3DBackground = dynamic(
-  () => import("./anawiser-3d-background").then((m) => m.Anawiser3DBackground),
-  { ssr: false },
-);
 
 const PLATFORM_META: Record<string, { label: string; color: string; bg: string; dot: string }> = {
   flipkart:  { label: "Flipkart",  color: "#2874f0", bg: "#eef3ff", dot: "bg-blue-600" },
@@ -133,9 +127,7 @@ export function AnawiserDashboard() {
     : null;
 
   return (
-    <div className="relative flex min-h-screen bg-transparent font-sans text-ink">
-      <Anawiser3DBackground />
-
+    <div className="relative flex min-h-screen bg-paper font-sans text-ink">
       <div className="relative z-10 flex min-h-screen w-full">
         <Sidebar />
 
@@ -145,7 +137,7 @@ export function AnawiserDashboard() {
             <p className="mb-2 font-mono text-[11px] font-semibold uppercase tracking-[0.18em] text-violet-700">
               Price radar
             </p>
-            <h1 className="heading-strong font-display text-3xl md:text-4xl">
+            <h1 className="heading-strong text-3xl md:text-4xl">
               Welcome to Anawiser
             </h1>
             <p className="text-super mt-3 max-w-md text-[16px] text-slate-800">

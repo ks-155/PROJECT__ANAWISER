@@ -50,7 +50,7 @@ export default function LocalAdminPage() {
 
       <header className="mb-10 rounded-2xl bg-gradient-to-r from-indigo-900 to-slate-900 px-8 py-12 text-white shadow-xl text-center">
         <Store className="h-12 w-12 mx-auto mb-4 text-indigo-400" />
-        <h1 className="font-display text-3xl font-bold tracking-tight md:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight md:text-4xl">
           Local Store Admin Panel
         </h1>
         <p className="mt-4 text-slate-300 max-w-xl mx-auto">
